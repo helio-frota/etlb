@@ -1,0 +1,76 @@
+services:
+
+  trustify01:
+    image: ghcr.io/trustification/trustd:latest
+    environment:
+      HTTP_SERVER_BIND_ADDR: "::"
+      HTTP_SERVER_WORKERS: 1
+      TRUST_DB_HOST: localhost
+    depends_on:
+      - migration
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "0.8GB"
+    network_mode: "host"
+    command: "api -p 8080 --auth-disabled"
+
+  trustify02:
+    image: ghcr.io/trustification/trustd:latest
+    environment:
+      HTTP_SERVER_BIND_ADDR: "::"
+      HTTP_SERVER_WORKERS: 1
+      TRUST_DB_HOST: localhost
+    depends_on:
+      - migration
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "0.8GB"
+    network_mode: "host"
+    command: "api -p 8081 --auth-disabled"
+
+  haproxy:
+    image: haproxy:latest
+    volumes:
+        - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:Z
+    depends_on:
+      - trustify01
+      - trustify02
+    network_mode: "host"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: "0.5GB"
+
+  migration:
+    image: ghcr.io/trustification/trustd:latest
+    network_mode: "host"
+    command: "db --db-url=postgres://postgres:trustify@localhost:5432/trustify migrate"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: docker.io/library/postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "trustify"
+      POSTGRES_DB: "trustify"
+    restart: always
+    network_mode: "host"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d trustify"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "1GB"
