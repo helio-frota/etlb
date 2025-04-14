@@ -1,0 +1,15 @@
+http_code: %{http_code}\n
+content_type: %{content_type}\n
+remote_ip: %{remote_ip}\n
+remote_port: %{remote_port}\n
+\n
+dns_lookup_time: %{time_namelookup}\n
+tcp_connect_time: %{time_connect}\n
+pretransfer_time: %{time_pretransfer}\n
+start_transfer_time: %{time_starttransfer}\n
+redirect_time: %{time_redirect}\n
+----------\n
+total_time: %{time_total}\n
+size_download: %{size_download}\n
+speed_download: %{speed_download}\n
+\n
