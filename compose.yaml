@@ -1,7 +1,7 @@
 services:
 
   trustify01:
-    image: ghcr.io/trustification/trustd:latest
+    image: ghcr.io/trustification/trustd:0.2.16
     environment:
       HTTP_SERVER_BIND_ADDR: "::"
       HTTP_SERVER_WORKERS: 1
@@ -17,7 +17,7 @@ services:
     command: "api -p 8080 --auth-disabled"
 
   trustify02:
-    image: ghcr.io/trustification/trustd:latest
+    image: ghcr.io/trustification/trustd:0.2.16
     environment:
       HTTP_SERVER_BIND_ADDR: "::"
       HTTP_SERVER_WORKERS: 1
